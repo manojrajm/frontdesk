@@ -18,6 +18,10 @@ const Form = styled.form`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr; /* Stack inputs on small screens */
+  }
 `;
 
 const FormGroup = styled.div`
@@ -35,6 +39,12 @@ const Input = styled.input`
   padding: 10px;
   border: 2px solid #ddd;
   border-radius: 8px;
+  width: 100%; /* Ensure inputs take full width */
+
+  @media (max-width: 600px) {
+    font-size: 16px;
+    padding: 12px; /* Bigger tap targets for mobile */
+  }
 `;
 
 const ErrorText = styled.span`
@@ -52,8 +62,13 @@ const SubmitButton = styled.button`
   font-size: 18px;
   cursor: pointer;
   transition: all 0.3s;
+
   &:hover {
     background: #0056b3;
+  }
+
+  @media (max-width: 600px) {
+    grid-column: span 1; /* Make it full-width on mobile */
   }
 `;
 
@@ -75,10 +90,10 @@ export default function BookingEntry() {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-  
+
     setFormData((prevState) => {
       let newFormData = { ...prevState };
-  
+
       if (type === "file") {
         newFormData.screenshot = files[0];
       } else if (name in prevState.rooms) {
@@ -86,15 +101,13 @@ export default function BookingEntry() {
       } else {
         newFormData[name] = value;
       }
-  
-      // Calculate balanceAmount dynamically
+
       if (name === "totalAmount" || name === "advanceAmount") {
         const total = parseFloat(newFormData.totalAmount) || 0;
         const advance = parseFloat(newFormData.advanceAmount) || 0;
         newFormData.balanceAmount = total - advance;
       }
-  
-      // Validate Check-Out Date
+
       if (name === "checkOutDate" && newFormData.checkInDate) {
         if (new Date(value) <= new Date(newFormData.checkInDate)) {
           setDateError("Check-Out Date must be greater than Check-In Date.");
@@ -102,11 +115,10 @@ export default function BookingEntry() {
           setDateError("");
         }
       }
-  
+
       return newFormData;
     });
   };
-  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -217,15 +229,14 @@ export default function BookingEntry() {
         </FormGroup>
 
         <FormGroup>
-  <Label>Balance Payment</Label>
-  <Input
-    type="number"
-    name="balanceAmount"
-    value={formData.balanceAmount}
-    readOnly // Prevent manual input, as it's auto-calculated
-  />
-</FormGroup>
-
+          <Label>Balance Payment</Label>
+          <Input
+            type="number"
+            name="balanceAmount"
+            value={formData.balanceAmount}
+            readOnly
+          />
+        </FormGroup>
 
         <FormGroup>
           <Label>Total Amount</Label>

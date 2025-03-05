@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
 import moment from "moment";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { db } from "./firebase/FirebaseConfig"; 
-import { collection, query, where,  onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import "./Dashboard.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function Dashboard() {
+  const navigate = useNavigate(); // Hook for navigation
   const [currentTime, setCurrentTime] = useState(moment().format("hh:mm:ss A"));
-
-  // Total Room Count
   const TOTAL_ROOMS = { Double: 33, Triple: 8, Four: 4 };
-
-  // Availability State
   const [availability, setAvailability] = useState({ ...TOTAL_ROOMS });
   const [totalBookings, setTotalBookings] = useState(0);
 
@@ -24,49 +22,33 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const today = moment().format("YYYY-MM-DD");
+    const today = moment().format("YYYY-MM-DD");
+    const bookingsRef = collection(db, "bookings");
+    const q = query(bookingsRef, where("date", "==", today));
 
-        console.log("Fetching bookings for:", today);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      let bookedRooms = { Double: 0, Triple: 0, Four: 0 };
+      let count = 0;
 
-        const bookingsRef = collection(db, "bookings");
-        const q = query(bookingsRef, where("date", "==", today));
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        count++;
+        bookedRooms.Double += Number(data.double) || 0;
+        bookedRooms.Triple += Number(data.triple) || 0;
+        bookedRooms.Four += Number(data.four) || 0;
+      });
 
-        // Listen for real-time updates
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-          let bookedRooms = { Double: 0, Triple: 0, Four: 0 };
-          let count = 0; // Total bookings count
+      setTotalBookings(count);
+      setAvailability({
+        Double: Math.max(TOTAL_ROOMS.Double - bookedRooms.Double, 0),
+        Triple: Math.max(TOTAL_ROOMS.Triple - bookedRooms.Triple, 0),
+        Four: Math.max(TOTAL_ROOMS.Four - bookedRooms.Four, 0),
+      });
+    });
 
-          snapshot.forEach((doc) => {
-            const data = doc.data();
-            count++; // Count total bookings
-
-            bookedRooms.Double += Number(data.double) || 0;
-            bookedRooms.Triple += Number(data.triple) || 0;
-            bookedRooms.Four += Number(data.four) || 0;
-          });
-
-          console.log("Total Booked Rooms:", bookedRooms);
-          setTotalBookings(count);
-
-          setAvailability({
-            Double: Math.max(TOTAL_ROOMS.Double - bookedRooms.Double, 0),
-            Triple: Math.max(TOTAL_ROOMS.Triple - bookedRooms.Triple, 0),
-            Four: Math.max(TOTAL_ROOMS.Four - bookedRooms.Four, 0),
-          });
-        });
-
-        return () => unsubscribe(); // Unsubscribe on unmount
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-      }
-    };
-
-    fetchBookings();
+    return () => unsubscribe();
   }, []);
 
-  // Calculate occupancy rate
   const totalRoomsAvailable = Object.values(TOTAL_ROOMS).reduce((a, b) => a + b, 0);
   const totalRoomsBooked = totalRoomsAvailable - Object.values(availability).reduce((a, b) => a + b, 0);
   const occupancyRate = ((totalRoomsBooked / totalRoomsAvailable) * 100).toFixed(1);
@@ -75,10 +57,18 @@ export default function Dashboard() {
     <div className="dashboard-container">
       {/* Sidebar Navigation */}
       <div className="sidebar">
-        <button className="sidebar-button"><i className="fas fa-home"></i> Home</button>
-        <button className="sidebar-button"><i className="fas fa-bed"></i> Booking Entry</button>
-        <button className="sidebar-button"><i className="fas fa-list"></i> Booking Details</button>
-        <button className="sidebar-button"><i className="fas fa-edit"></i> Modify Booking</button>
+        <button className="sidebar-button" onClick={() => navigate("/")}>
+          <i className="fas fa-home"></i> Home
+        </button>
+        <button className="sidebar-button" onClick={() => navigate("/booking-entry")}>
+          <i className="fas fa-bed"></i> Booking Entry
+        </button>
+        <button className="sidebar-button" onClick={() => navigate("/booking-details")}>
+          <i className="fas fa-list"></i> Booking Details
+        </button>
+        <button className="sidebar-button" onClick={() => navigate("/modify-booking")}>
+          <i className="fas fa-edit"></i> Modify Booking
+        </button>
       </div>
 
       {/* Main Content */}
@@ -95,26 +85,17 @@ export default function Dashboard() {
 
         {/* Summary Cards */}
         <div className="summary-container">
-          <motion.div 
-            className="card gradient-card"
-            whileHover={{ scale: 1.05 }}
-          >
+          <motion.div className="card gradient-card" whileHover={{ scale: 1.05 }}>
             <h2>Current Date</h2>
             <p className="date-text"><i className="fas fa-calendar-alt"></i> {moment().format("YYYY-MM-DD")}</p>
           </motion.div>
 
-          <motion.div 
-            className="card"
-            whileHover={{ scale: 1.05 }}
-          >
+          <motion.div className="card" whileHover={{ scale: 1.05 }}>
             <h2>Total Bookings Today</h2>
             <p className="booking-count"><i className="fas fa-book"></i> {totalBookings}</p>
           </motion.div>
 
-          <motion.div 
-            className="card gradient-card"
-            whileHover={{ scale: 1.05 }}
-          >
+          <motion.div className="card gradient-card" whileHover={{ scale: 1.05 }}>
             <h2>Occupancy Rate</h2>
             <p className="occupancy-text"><i className="fas fa-chart-line"></i> {occupancyRate}%</p>
           </motion.div>

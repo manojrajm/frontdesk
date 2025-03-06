@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
 import moment from "moment";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { db } from "./firebase/FirebaseConfig"; 
+import { useNavigate } from "react-router-dom";
+import { db } from "./firebase/FirebaseConfig";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import "./Dashboard.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 export default function Dashboard() {
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(moment().format("hh:mm:ss A"));
-  const TOTAL_ROOMS = { Double: 33, Triple: 8, Four: 4 };
+  
+  // Total room configuration
+  const TOTAL_ROOMS = { Double: 33, Triple: 8, Four: 3 };
+  
   const [availability, setAvailability] = useState({ ...TOTAL_ROOMS });
   const [totalBookings, setTotalBookings] = useState(0);
 
@@ -22,21 +25,37 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const today = moment().format("YYYY-MM-DD");
+    const today = moment().format("YYYY-MM-DD"); // Format for Firestore query
     const bookingsRef = collection(db, "bookings");
-    const q = query(bookingsRef, where("date", "==", today));
+
+    console.log("Fetching bookings for:", today);
+
+    const q = query(bookingsRef, where("checkInDate", "==", today));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        console.log("No bookings found for today.");
+        setTotalBookings(0);
+        setAvailability({ ...TOTAL_ROOMS });
+        return;
+      }
+
       let bookedRooms = { Double: 0, Triple: 0, Four: 0 };
       let count = 0;
 
       snapshot.forEach((doc) => {
         const data = doc.data();
+        console.log("Booking Data:", data);
+
         count++;
-        bookedRooms.Double += Number(data.double) || 0;
-        bookedRooms.Triple += Number(data.triple) || 0;
-        bookedRooms.Four += Number(data.four) || 0;
+
+        // Ensure that the data structure matches Firestore
+        bookedRooms.Double += Number(data.rooms?.double) || 0;
+        bookedRooms.Triple += Number(data.rooms?.triple) || 0;
+        bookedRooms.Four += Number(data.rooms?.four) || 0;
       });
+
+      console.log("Booked Rooms:", bookedRooms);
 
       setTotalBookings(count);
       setAvailability({
@@ -49,6 +68,7 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
+  // Compute total booked rooms and occupancy rate
   const totalRoomsAvailable = Object.values(TOTAL_ROOMS).reduce((a, b) => a + b, 0);
   const totalRoomsBooked = totalRoomsAvailable - Object.values(availability).reduce((a, b) => a + b, 0);
   const occupancyRate = ((totalRoomsBooked / totalRoomsAvailable) * 100).toFixed(1);

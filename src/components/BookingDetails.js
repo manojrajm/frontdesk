@@ -69,6 +69,14 @@ const Td = styled.td`
   text-align: left;
 `;
 
+const ScreenshotImage = styled.img`
+  width: 100px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+`;
+
 const NoData = styled.p`
   text-align: center;
   font-size: 18px;
@@ -88,10 +96,56 @@ const DeleteButton = styled.button`
   }
 `;
 
+// Modal styling for full-size image display
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+`;
+
+const FullSizeImage = styled.img`
+  width: 100%;
+  height: 100%;
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;  // Ensures the image fits without distortion
+  border-radius: 10px;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 50%;
+  &:hover {
+    background: lightgray;
+  }
+`;
+
 export default function BookingDetails() {
   const [bookings, setBookings] = useState([]);
   const [searchDate, setSearchDate] = useState("");
   const [searchName, setSearchName] = useState("");
+  const [modalImage, setModalImage] = useState(null); // Modal state
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -107,7 +161,6 @@ export default function BookingDetails() {
     fetchBookings();
   }, []);
 
-  // Function to delete bookings by name & checkInDate
   const handleDelete = async (name, checkInDate) => {
     try {
       const q = query(collection(db, "hotels"), where("name", "==", name), where("checkInDate", "==", checkInDate));
@@ -118,13 +171,11 @@ export default function BookingDetails() {
         return;
       }
 
-      // Delete each matching document
       const deletePromises = querySnapshot.docs.map(docRef => deleteDoc(doc(db, "hotels", docRef.id)));
 
       await Promise.all(deletePromises);
       alert("Booking deleted successfully!");
 
-      // Update state after deletion
       setBookings(prevBookings => prevBookings.filter(booking => !(booking.name === name && booking.checkInDate === checkInDate)));
     } catch (error) {
       console.error("Error deleting booking:", error);
@@ -132,7 +183,6 @@ export default function BookingDetails() {
     }
   };
 
-  // Filter bookings based on search criteria
   const filteredBookings = bookings.filter((booking) => {
     const matchesName = searchName
       ? booking.name.toLowerCase().includes(searchName.toLowerCase())
@@ -178,6 +228,7 @@ export default function BookingDetails() {
                 <Th>Total Amount</Th>
                 <Th>Advance</Th>
                 <Th>Balance</Th>
+                <Th>Screenshot</Th>
                 <Th>Action</Th>
               </tr>
             </Thead>
@@ -198,7 +249,18 @@ export default function BookingDetails() {
                   <Td>{booking.checkOutDate}</Td>
                   <Td>{booking.totalAmount}</Td>
                   <Td>{booking.advanceAmount}</Td>
-                  <Td>{booking.balanceAmount }</Td>
+                  <Td>{booking.balanceAmount}</Td>
+                  <Td>
+                    {booking.screenshot ? (
+                      <ScreenshotImage
+                        src={booking.screenshot}
+                        alt="Screenshot"
+                        onClick={() => setModalImage(booking.screenshot)}
+                      />
+                    ) : (
+                      "No Image"
+                    )}
+                  </Td>
                   <Td>
                     <DeleteButton onClick={() => handleDelete(booking.name, booking.checkInDate)}>
                       Delete
@@ -212,6 +274,17 @@ export default function BookingDetails() {
       ) : (
         <NoData>No bookings found.</NoData>
       )}
+
+{modalImage && (
+  <ModalOverlay onClick={() => setModalImage(null)}>
+    <ModalContent>
+      <FullSizeImage src={modalImage} alt="Full Size" />
+      <CloseButton onClick={() => setModalImage(null)}>X</CloseButton>
+    </ModalContent>
+  </ModalOverlay>
+)}
+
+    
     </Container>
   );
 }

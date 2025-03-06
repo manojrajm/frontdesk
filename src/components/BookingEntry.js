@@ -40,11 +40,6 @@ const Input = styled.input`
   border: 2px solid #ddd;
   border-radius: 8px;
   width: 100%; /* Ensure inputs take full width */
-
-  @media (max-width: 600px) {
-    font-size: 16px;
-    padding: 12px; /* Bigger tap targets for mobile */
-  }
 `;
 
 const ErrorText = styled.span`
@@ -83,7 +78,7 @@ export default function BookingEntry() {
     balanceAmount: "",
     totalAmount: "",
     rooms: { double: 0, triple: 0, four: 0 },
-    screenshot: null,
+    screenshot: null, // Base64 Image
   });
 
   const [dateError, setDateError] = useState("");
@@ -95,7 +90,14 @@ export default function BookingEntry() {
       let newFormData = { ...prevState };
 
       if (type === "file") {
-        newFormData.screenshot = files[0];
+        const file = files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setFormData((prev) => ({ ...prev, screenshot: reader.result }));
+          };
+          reader.readAsDataURL(file);
+        }
       } else if (name in prevState.rooms) {
         newFormData.rooms = { ...prevState.rooms, [name]: value };
       } else {
@@ -163,92 +165,44 @@ export default function BookingEntry() {
       <Form onSubmit={handleSubmit}>
         <FormGroup>
           <Label>Name</Label>
-          <Input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
+          <Input type="text" name="name" value={formData.name} onChange={handleChange} required />
         </FormGroup>
 
         <FormGroup>
           <Label>Booking Type</Label>
-          <Input
-            type="text"
-            name="bookingType"
-            value={formData.bookingType}
-            onChange={handleChange}
-            required
-          />
+          <Input type="text" name="bookingType" value={formData.bookingType} onChange={handleChange} required />
         </FormGroup>
 
         <FormGroup>
           <Label>Mobile Number</Label>
-          <Input
-            type="tel"
-            name="mobile"
-            value={formData.mobile}
-            onChange={handleChange}
-            required
-          />
+          <Input type="tel" name="mobile" value={formData.mobile} onChange={handleChange} required />
         </FormGroup>
 
         <FormGroup>
           <Label>Check-In Date</Label>
-          <Input
-            type="date"
-            name="checkInDate"
-            value={formData.checkInDate}
-            onChange={handleChange}
-            required
-          />
+          <Input type="date" name="checkInDate" value={formData.checkInDate} onChange={handleChange} required />
         </FormGroup>
 
         <FormGroup>
           <Label>Check-Out Date</Label>
-          <Input
-            type="date"
-            name="checkOutDate"
-            value={formData.checkOutDate}
-            onChange={handleChange}
-            required
-          />
+          <Input type="date" name="checkOutDate" value={formData.checkOutDate} onChange={handleChange} required />
           {dateError && <ErrorText>{dateError}</ErrorText>}
         </FormGroup>
 
         <FormGroup>
           <Label>Advance Amount</Label>
-          <Input
-            type="number"
-            name="advanceAmount"
-            value={formData.advanceAmount}
-            onChange={handleChange}
-            required
-          />
+          <Input type="number" name="advanceAmount" value={formData.advanceAmount} onChange={handleChange} required />
         </FormGroup>
 
         <FormGroup>
           <Label>Balance Payment</Label>
-          <Input
-            type="number"
-            name="balanceAmount"
-            value={formData.balanceAmount}
-            readOnly
-          />
+          <Input type="number" name="balanceAmount" value={formData.balanceAmount} readOnly />
         </FormGroup>
 
         <FormGroup>
           <Label>Total Amount</Label>
-          <Input
-            type="number"
-            name="totalAmount"
-            value={formData.totalAmount}
-            onChange={handleChange}
-            required
-          />
+          <Input type="number" name="totalAmount" value={formData.totalAmount} onChange={handleChange} required />
         </FormGroup>
-
         <FormGroup>
           <Label>Double Bed Rooms</Label>
           <Input
@@ -282,14 +236,12 @@ export default function BookingEntry() {
           />
         </FormGroup>
 
+
+
         <FormGroup>
           <Label>Upload Screenshot</Label>
-          <Input
-            type="file"
-            name="screenshot"
-            onChange={handleChange}
-            accept="image/*"
-          />
+          <Input type="file" name="screenshot" onChange={handleChange} accept="image/*" />
+          {formData.screenshot && <img src={formData.screenshot} alt="Uploaded Preview" style={{ width: "200px", marginTop: "10px" }} />}
         </FormGroup>
 
         <SubmitButton type="submit">Submit Booking</SubmitButton>

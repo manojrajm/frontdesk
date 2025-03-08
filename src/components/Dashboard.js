@@ -26,7 +26,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const today = moment().format("YYYY-MM-DD"); // Format for Firestore query
-    const bookingsRef = collection(db, "bookings");
+    const bookingsRef = collection(db, "hotels");
 
     console.log("Fetching bookings for:", today);
 
@@ -68,7 +68,13 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
-  // Compute total booked rooms and occupancy rate
+
+
+
+
+
+
+  
   const totalRoomsAvailable = Object.values(TOTAL_ROOMS).reduce((a, b) => a + b, 0);
   const totalRoomsBooked = totalRoomsAvailable - Object.values(availability).reduce((a, b) => a + b, 0);
   const occupancyRate = ((totalRoomsBooked / totalRoomsAvailable) * 100).toFixed(1);

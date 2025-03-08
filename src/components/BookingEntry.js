@@ -20,7 +20,7 @@ const Form = styled.form`
   gap: 15px;
 
   @media (max-width: 600px) {
-    grid-template-columns: 1fr; /* Stack inputs on small screens */
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -39,7 +39,7 @@ const Input = styled.input`
   padding: 10px;
   border: 2px solid #ddd;
   border-radius: 8px;
-  width: 100%; /* Ensure inputs take full width */
+  width: 100%;
 `;
 
 const ErrorText = styled.span`
@@ -63,7 +63,7 @@ const SubmitButton = styled.button`
   }
 
   @media (max-width: 600px) {
-    grid-column: span 1; /* Make it full-width on mobile */
+    grid-column: span 1;
   }
 `;
 
@@ -77,8 +77,10 @@ export default function BookingEntry() {
     advanceAmount: "",
     balanceAmount: "",
     totalAmount: "",
+    extraBed: 0, // NEW FIELD
+    cp: "", // NEW FIELD
     rooms: { double: 0, triple: 0, four: 0 },
-    screenshot: null, // Base64 Image
+    screenshot: null,
   });
 
   const [dateError, setDateError] = useState("");
@@ -148,6 +150,8 @@ export default function BookingEntry() {
         advanceAmount: "",
         balanceAmount: "",
         totalAmount: "",
+        extraBed: 0,
+        cp: "",
         rooms: { double: 0, triple: 0, four: 0 },
         screenshot: null,
       });
@@ -203,40 +207,31 @@ export default function BookingEntry() {
           <Label>Total Amount</Label>
           <Input type="number" name="totalAmount" value={formData.totalAmount} onChange={handleChange} required />
         </FormGroup>
+
         <FormGroup>
           <Label>Double Bed Rooms</Label>
-          <Input
-            type="number"
-            name="double"
-            value={formData.rooms.double}
-            onChange={handleChange}
-            min="0"
-          />
+          <Input type="number" name="double" value={formData.rooms.double} onChange={handleChange} min="0" />
         </FormGroup>
 
         <FormGroup>
           <Label>Triple Bed Rooms</Label>
-          <Input
-            type="number"
-            name="triple"
-            value={formData.rooms.triple}
-            onChange={handleChange}
-            min="0"
-          />
+          <Input type="number" name="triple" value={formData.rooms.triple} onChange={handleChange} min="0" />
         </FormGroup>
 
         <FormGroup>
           <Label>Four Bed Rooms</Label>
-          <Input
-            type="number"
-            name="four"
-            value={formData.rooms.four}
-            onChange={handleChange}
-            min="0"
-          />
+          <Input type="number" name="four" value={formData.rooms.four} onChange={handleChange} min="0" />
         </FormGroup>
 
+        <FormGroup>
+          <Label>Extra Bed</Label>
+          <Input type="number" name="extraBed" value={formData.extraBed} onChange={handleChange} min="0" />
+        </FormGroup>
 
+        <FormGroup>
+          <Label>CP </Label>
+          <Input type="text" name="cp" value={formData.cp} onChange={handleChange} />
+        </FormGroup>
 
         <FormGroup>
           <Label>Upload Screenshot</Label>

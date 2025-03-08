@@ -228,6 +228,8 @@ export default function BookingDetails() {
                 <Th>Total Amount</Th>
                 <Th>Advance</Th>
                 <Th>Balance</Th>
+                <Th>extraBed</Th>
+                <Th>cp</Th>
                 <Th>Screenshot</Th>
                 <Th>Action</Th>
               </tr>
@@ -250,6 +252,8 @@ export default function BookingDetails() {
                   <Td>{booking.totalAmount}</Td>
                   <Td>{booking.advanceAmount}</Td>
                   <Td>{booking.balanceAmount}</Td>
+                  <Td>{booking.extraBed}</Td>
+                  <Td>{booking.cp}</Td>
                   <Td>
                     {booking.screenshot ? (
                       <ScreenshotImage

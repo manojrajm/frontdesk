@@ -1,70 +1,108 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<div align="center">
+  <a href="https://github.com/srilakshmikanthanp/clipbirdesk">
+    <img src="../frontend/public/Logo.png" alt="Logo" width="120" height="120"> 
+  </a>
+  <h1>FrontDesk</h1>
+</div>
 
-## Available Scripts
 
-In the project directory, you can run:
+## Overview
+This project is a **Hotel Booking Management System** built with **React** for the frontend and **Firebase (Firestore & Storage)** for backend services. It allows hotel staff to manage room bookings, track availability, upload & view booking images, and generate booking reports in Excel format.
 
-### `npm start`
+## Features
+- **Booking Management**: Add, modify, and delete hotel bookings.
+- **Real-time Availability**: Displays real-time room availability based on bookings.
+- **Image Upload**: Upload and store booking screenshots.
+- **Search & Filter**: Search bookings by name and date.
+- **Booking Reports**: Download bookings as an Excel file.
+- **Responsive UI**: Designed for mobile and desktop compatibility.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Tech Stack
+- **Frontend**: React, Styled Components
+- **Backend**: Firebase Firestore, Firebase Storage
+- **Other Dependencies**:
+  - `react-csv` for CSV/Excel download
+  - `firebase` for database interactions
+  - `styled-components` for UI styling
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation & Setup
+### Prerequisites
+Ensure you have **Node.js** installed. You also need a Firebase project set up.
 
-### `npm test`
+### Clone the Repository
+```sh
+git clone https://github.com/your-repository/hotel-booking-system.git
+cd hotel-booking-system
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Install Dependencies
+```sh
+npm install
+```
 
-### `npm run build`
+### Configure Firebase
+1. Create a **Firebase Project** at [Firebase Console](https://console.firebase.google.com/)
+2. Add a **Firestore Database** and **Storage**
+3. Generate Firebase config and add it in `src/firebase/FirebaseConfig.js`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Example `FirebaseConfig.js`:
+```js
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+```
 
-### `npm run eject`
+### Run the Application
+```sh
+npm start
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Usage
+1. **Booking Entry**: Add a new booking with guest details.
+2. **Booking Details**: View, search, and filter bookings.
+3. **Delete Booking**: Remove a booking from the system.
+4. **Download Report**: Click the **Download Excel** button to save booking details.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Project Structure
+```
+/src
+  ├── components/   # Reusable UI Components
+  ├── firebase/     # Firebase configuration
+  ├── pages/        # Main app pages
+  ├── styles/       # Global styles
+  ├── App.js        # Entry point
+  ├── index.js      # Renders the app
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Deployment
+You can deploy the project using **Vercel**, **Netlify**, or **Firebase Hosting**.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Example (Firebase Hosting):
+```sh
+npm run build
+firebase deploy
+```
 
-## Learn More
+## Future Improvements
+- Authentication (Admin login)
+- Payment Gateway Integration
+- Advanced Reporting & Analytics
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

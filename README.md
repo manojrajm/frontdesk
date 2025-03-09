@@ -1,6 +1,6 @@
 
 <div align="center">
-  <a href="https://github.com/srilakshmikanthanp/clipbirdesk">
+  <a href="https://github.com/pmanojrajm/frontend">
     <img src="../frontend/public/Logo.png" alt="Logo" width="120" height="120"> 
   </a>
   <h1>FrontDesk</h1>

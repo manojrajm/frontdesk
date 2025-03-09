@@ -1,6 +1,6 @@
 
 <div align="center">
-  <a href="https://github.com/manojrajm/frontend">
+  <a href="[https://github.com/manojrajm/frontend](https://github.com/manojrajm/frontdesk?tab=readme-ov-file)">
     <img src="./public//Logo.png" alt="Logo" width="120" height="120"> 
     
   </a>

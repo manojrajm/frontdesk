@@ -1,7 +1,8 @@
 
 <div align="center">
   <a href="https://github.com/pmanojrajm/frontend">
-    <img src="../frontend/public/Logo.png" alt="Logo" width="120" height="120"> 
+    <img src="./public//Logo.png" alt="Logo" width="120" height="120"> 
+    
   </a>
   <h1>FrontDesk</h1>
 </div>
@@ -98,7 +99,6 @@ firebase deploy
 ```
 
 ## Future Improvements
-- Authentication (Admin login)
 - Payment Gateway Integration
 - Advanced Reporting & Analytics
 

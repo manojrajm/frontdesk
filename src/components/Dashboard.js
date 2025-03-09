@@ -16,6 +16,7 @@ export default function Dashboard() {
   
   const [availability, setAvailability] = useState({ ...TOTAL_ROOMS });
   const [totalBookings, setTotalBookings] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -25,16 +26,19 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    const today = moment().format("YYYY-MM-DD"); // Format for Firestore query
+    fetchBookings(selectedDate);
+  }, [selectedDate]); // Re-run when the selectedDate changes
+
+  const fetchBookings = (date) => {
     const bookingsRef = collection(db, "hotels");
 
-    console.log("Fetching bookings for:", today);
+    console.log("Fetching bookings for:", date);
 
-    const q = query(bookingsRef, where("checkInDate", "==", today));
+    const q = query(bookingsRef, where("checkInDate", "==", date));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (snapshot.empty) {
-        console.log("No bookings found for today.");
+        console.log("No bookings found for this date.");
         setTotalBookings(0);
         setAvailability({ ...TOTAL_ROOMS });
         return;
@@ -66,15 +70,12 @@ export default function Dashboard() {
     });
 
     return () => unsubscribe();
-  }, []);
+  };
 
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
 
-
-
-
-
-
-  
   const totalRoomsAvailable = Object.values(TOTAL_ROOMS).reduce((a, b) => a + b, 0);
   const totalRoomsBooked = totalRoomsAvailable - Object.values(availability).reduce((a, b) => a + b, 0);
   const occupancyRate = ((totalRoomsBooked / totalRoomsAvailable) * 100).toFixed(1);
@@ -109,15 +110,25 @@ export default function Dashboard() {
           <span><i className="far fa-clock"></i> {currentTime}</span>
         </motion.div>
 
+        {/* Date Picker */}
+        <div className="date-picker-container">
+          <label>Select Date: </label>
+          <input 
+            type="date" 
+            value={selectedDate} 
+            onChange={handleDateChange} 
+          />
+        </div>
+
         {/* Summary Cards */}
         <div className="summary-container">
           <motion.div className="card gradient-card" whileHover={{ scale: 1.05 }}>
-            <h2>Current Date</h2>
-            <p className="date-text"><i className="fas fa-calendar-alt"></i> {moment().format("YYYY-MM-DD")}</p>
+            <h2>Selected Date</h2>
+            <p className="date-text"><i className="fas fa-calendar-alt"></i> {selectedDate}</p>
           </motion.div>
 
           <motion.div className="card" whileHover={{ scale: 1.05 }}>
-            <h2>Total Bookings Today</h2>
+            <h2>Total Bookings</h2>
             <p className="booking-count"><i className="fas fa-book"></i> {totalBookings}</p>
           </motion.div>
 

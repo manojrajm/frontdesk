@@ -79,6 +79,7 @@ export default function BookingEntry() {
     totalAmount: "",
     extraBed: 0, // NEW FIELD
     cp: "", // NEW FIELD
+    ac:"",
     rooms: { double: 0, triple: 0, four: 0 },
     screenshot: null,
   });
@@ -152,6 +153,7 @@ export default function BookingEntry() {
         totalAmount: "",
         extraBed: 0,
         cp: "",
+        ac:"",
         rooms: { double: 0, triple: 0, four: 0 },
         screenshot: null,
       });
@@ -222,6 +224,12 @@ export default function BookingEntry() {
           <Label>Four Bed Rooms</Label>
           <Input type="number" name="four" value={formData.rooms.four} onChange={handleChange} min="0" />
         </FormGroup>
+
+        <FormGroup>
+          <Label>AcType </Label>
+          <Input type="text" name="ac" value={formData.ac} onChange={handleChange} />
+        </FormGroup>
+
 
         <FormGroup>
           <Label>Extra Bed</Label>

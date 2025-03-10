@@ -187,14 +187,12 @@ export default function BookingDetails() {
     const matchesName = searchName
       ? booking.name.toLowerCase().includes(searchName.toLowerCase())
       : true;
-
-    const matchesDate = searchDate
-      ? booking.checkInDate === searchDate || booking.checkOutDate === searchDate
-      : true;
-
+  
+    const matchesDate = searchDate ? booking.checkInDate === searchDate : true;
+  
     return matchesName && matchesDate;
   });
-
+  
   return (
     <Container>
       <Title>Booking Details</Title>
@@ -222,31 +220,32 @@ export default function BookingDetails() {
                 <Th>Name</Th>
                 <Th>Booking Type</Th>
                 <Th>Mobile</Th>
-                <Th>Rooms Booked</Th>
+                <Th>Double</Th>
+                <Th>Triple</Th>
+                <Th>Four-bed</Th>
+                <Th>AC Type</Th>
                 <Th>Check-in Date</Th>
                 <Th>Check-out Date</Th>
                 <Th>Total Amount</Th>
                 <Th>Advance</Th>
                 <Th>Balance</Th>
-                <Th>extraBed</Th>
-                <Th>cp</Th>
+                <Th>Extra Bed</Th>
+                <Th>CP</Th>
                 <Th>Screenshot</Th>
                 <Th>Action</Th>
               </tr>
             </Thead>
+
             <tbody>
               {filteredBookings.map((booking, index) => (
                 <tr key={index}>
                   <Td>{booking.name}</Td>
                   <Td>{booking.bookingType}</Td>
                   <Td>{booking.mobile}</Td>
-                  <Td>
-                    {Object.entries(booking.rooms || {}).map(([roomType, count]) => (
-                      <div key={roomType}>
-                        {roomType}: {count}
-                      </div>
-                    ))}
-                  </Td>
+                  <Td>{booking.rooms?.double || 0}</Td>
+                  <Td>{booking.rooms?.triple || 0}</Td>
+                  <Td>{booking.rooms?.four || 0}</Td>
+                  <Td>{booking.ac}</Td>
                   <Td>{booking.checkInDate}</Td>
                   <Td>{booking.checkOutDate}</Td>
                   <Td>{booking.totalAmount}</Td>
@@ -261,9 +260,7 @@ export default function BookingDetails() {
                         alt="Screenshot"
                         onClick={() => setModalImage(booking.screenshot)}
                       />
-                    ) : (
-                      "No Image"
-                    )}
+                    ) : "No Image"}
                   </Td>
                   <Td>
                     <DeleteButton onClick={() => handleDelete(booking.name, booking.checkInDate)}>
@@ -278,17 +275,6 @@ export default function BookingDetails() {
       ) : (
         <NoData>No bookings found.</NoData>
       )}
-
-{modalImage && (
-  <ModalOverlay onClick={() => setModalImage(null)}>
-    <ModalContent>
-      <FullSizeImage src={modalImage} alt="Full Size" />
-      <CloseButton onClick={() => setModalImage(null)}>X</CloseButton>
-    </ModalContent>
-  </ModalOverlay>
-)}
-
-    
     </Container>
   );
 }

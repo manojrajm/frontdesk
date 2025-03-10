@@ -34,7 +34,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 .date-picker-container {
-    margin-top: 12px;
+    margin-top: 15px;
     display: flex;
     align-items: center;
     gap: 12px;

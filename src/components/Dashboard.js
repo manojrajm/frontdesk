@@ -34,7 +34,11 @@ export default function Dashboard() {
 
     console.log("Fetching bookings for:", date);
 
-    const q = query(bookingsRef, where("checkInDate", "==", date));
+const q = query(
+  bookingsRef,
+  where("checkInDate", "<=", date),
+  where("checkOutDate", ">", date) // Ensures guests staying overnight are included
+);
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       if (snapshot.empty) {

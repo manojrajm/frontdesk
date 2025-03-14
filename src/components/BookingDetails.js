@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
 import { db } from "./firebase/FirebaseConfig"; // Ensure the correct path
 import styled from "styled-components";
+import moment from "moment";
 
 const Container = styled.div`
   max-width: 1100px;
@@ -188,10 +189,21 @@ export default function BookingDetails() {
       ? booking.name.toLowerCase().includes(searchName.toLowerCase())
       : true;
   
-    const matchesDate = searchDate ? booking.checkInDate === searchDate : true;
+    // Ensure moment.js is available
+    if (!moment) return false;
+  
+    // Convert to moment for comparison
+    const checkIn = moment(booking.checkInDate, "YYYY-MM-DD");
+    const checkOut = moment(booking.checkOutDate, "YYYY-MM-DD");
+  
+    const matchesDate =
+      searchDate &&
+      moment(searchDate, "YYYY-MM-DD").isSameOrAfter(checkIn) &&  // Check-in date is included
+      moment(searchDate, "YYYY-MM-DD").isBefore(checkOut);        // Checkout date is excluded
   
     return matchesName && matchesDate;
   });
+  
   
   return (
     <Container>
